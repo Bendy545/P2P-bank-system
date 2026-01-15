@@ -1,9 +1,9 @@
-from transactions import Transactions
+from .transactions import Transactions
 
 class Account:
-    def __init__(self, db, tx_dao):
+    def __init__(self, db, tx_dao=None):
         self.db = db
-        self.tx_dao = Transactions(db)
+        self.tx_dao = tx_dao or Transactions(db)
 
     def create_account(self, bank_code, account_no):
         conn = self.db.get_connection()
