@@ -17,6 +17,7 @@ class Database:
                 user=self._config['user'],
                 password=self._config['password'],
                 database=self._config['database'],
+                autocommit=False
             )
             print("Database connection Initialized.")
 

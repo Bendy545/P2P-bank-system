@@ -1,11 +1,13 @@
-from src.data.config_load import load_config
-from src.data.database import Database
+from src.database.config_load import load_config
+from src.database.database import Database
 
 if __name__ == '__main__':
     config = load_config("config.json")
 
     db = Database(config)
 
-    print("pripojeno")
+    db.get_connection()
+
+    print("connected")
 
     db.close()
