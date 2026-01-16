@@ -6,7 +6,7 @@ create table accounts(
 id int primary key auto_increment,
 account_no int not null check(account_no between 10000 and 99999),
 bank_code varchar(15) not null,
-balance decimal(19,0) not null default 0 check(balance >= 0),
+balance bigint unsigned not null default 0 check(balance >= 0),
 created_at timestamp default current_timestamp not null,
 updated_at timestamp default current_timestamp not null on update current_timestamp,
 
@@ -19,7 +19,7 @@ create table account_tx(
 id int primary key auto_increment,
 account_id int not null,
 tx_type char(1) not null check(tx_type in ('D', 'W')),
-amount decimal(19,0) not null check(amount >= 0),
+amount bigint unsigned not null check(amount >= 0),
 created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 foreign key(account_id) references accounts(id) on delete cascade
