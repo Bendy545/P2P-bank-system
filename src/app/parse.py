@@ -8,6 +8,9 @@ _ACCOUNT_RE = re.compile(r"^(\d{5})\/(\d{1,3}(\.\d{1,3}){3})$")
 class ParseError(Exception):
     pass
 
+class ForeignBankError(Exception):
+    pass
+
 def _validate_ipv4(ip):
     m = _IP_RE.match(ip)
     if not m:
@@ -59,7 +62,7 @@ def parse_line(raw_line):
             raise ParseError("Invalid Command format.")
         return code, parts[1], None
 
-    if code in ("AC", "AW"):
+    if code in ("AD", "AW"):
         if len(parts) != 3:
             raise ParseError("Invalid Command format.")
         return code, parts[1], parts[2]

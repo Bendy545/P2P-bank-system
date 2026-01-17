@@ -1,11 +1,18 @@
-from parse import parse_line, ParseError
-from response import ok, err
+from src.app.commands.ad import ADCommand
+from src.app.commands.aw import AWCommand
+from src.app.parse import parse_line, ParseError, ForeignBankError
+from src.app.response import ok, err
+from src.app.commands.ar import ARCommand
+from src.app.commands.ba import BACommand
+from src.app.commands.bn import BNCommand
 
 from src.database.dao.errors import AccountNotFound, NotEnoughFunds, AccountNotEmpty, DuplicateAccount
 
-from commands.bc import BCCommand
-from commands.ac import ACCommand
-from commands.ab import ABCommand
+from src.app.commands.bc import BCCommand
+from src.app.commands.ac import ACCommand
+from src.app.commands.ab import ABCommand
+from src.app.commands.ba import BACommand
+from src.app.commands.bn import BNCommand
 
 class Dispatcher:
     def __init__(self, app):
@@ -14,6 +21,11 @@ class Dispatcher:
             "BC": BCCommand(),
             "AC": ACCommand(),
             "AB": ABCommand(),
+            "BA": BACommand(),
+            "BN": BNCommand(),
+            "AR": ARCommand(),
+            "AD": ADCommand(),
+            "AW": AWCommand(),
         }
 
     def dispatch(self, raw_line):
@@ -24,6 +36,10 @@ class Dispatcher:
                 return err("Unknown command.")
 
             out_code, payload = cmd.execute(self.app, raw_line, arg1, arg2)
+
+            if out_code == "RAW":
+                return payload
+
             return ok(out_code, payload)
 
         except ParseError as e:
@@ -40,6 +56,9 @@ class Dispatcher:
 
         except DuplicateAccount:
             return err("Unavailable to create a new account.")
+
+        except ForeignBankError:
+            return err("Foreign bank.")
 
         except Exception:
             return err("Error occurred in application.")

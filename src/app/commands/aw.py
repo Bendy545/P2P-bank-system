@@ -1,0 +1,14 @@
+from src.app.commands.base import Command
+from src.app.parse import parse_account_ref, parse_amount
+
+class AWCommand(Command):
+    def execute(self, app, raw_line, arg1, arg2):
+        account_no, bank_code = parse_account_ref(arg1)
+        amount = parse_amount(arg2)
+
+        if bank_code != app.my_bank_code:
+            resp = app.proxy.forward(bank_code, raw_line)
+            return ("RAW", resp)
+
+        app.account_dao.withdraw(account_no, bank_code, amount)
+        return ("AW", None)
