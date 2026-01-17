@@ -1,4 +1,9 @@
+import mysql.connector
+
 from .transactions import Transactions
+from .errors import AccountNotEmpty, AccountNotFound, NotEnoughFunds, DuplicateAccount
+
+MAX_AMOUNT = 9223372036854775807
 
 class Account:
     def __init__(self, db, tx_dao=None):
@@ -17,6 +22,9 @@ class Account:
             cursor.execute(sql, (account_no, bank_code))
             conn.commit()
             return f"{account_no}/{bank_code}"
+        except mysql.connector.errors.IntegrityError as e:
+            conn.rollback()
+            raise DuplicateAccount("Account already exists") from e
         except Exception:
             conn.rollback()
             raise
@@ -34,7 +42,7 @@ class Account:
             cursor.execute(sql, (account_no, bank_code))
             row = cursor.fetchone()
             if not row:
-                raise ValueError("Account not found")
+                raise AccountNotFound("Account not found")
             return int(row[0])
         finally:
             cursor.close()
@@ -42,8 +50,8 @@ class Account:
     def deposit(self, account_no, bank_code, amount):
         account_no = int(account_no)
         amount = int(amount)
-        if amount < 0:
-            raise ValueError("Balance cannot be negative")
+        if amount < 0 or amount > MAX_AMOUNT:
+            raise ValueError("Amount out of range")
 
         conn = self.db.get_connection()
         cursor = conn.cursor()
@@ -54,7 +62,7 @@ class Account:
             )
             row = cursor.fetchone()
             if not row:
-                raise ValueError("Account not found")
+                raise AccountNotFound("Account not found")
 
             account_id, balance = row
             new_balance = int(balance) + amount
@@ -76,8 +84,8 @@ class Account:
     def withdraw(self, account_no, bank_code, amount):
         account_no = int(account_no)
         amount = int(amount)
-        if amount < 0:
-            raise ValueError("Balance cannot be negative")
+        if amount < 0 or amount > MAX_AMOUNT:
+            raise ValueError("Amount out of range")
 
         conn = self.db.get_connection()
         cursor = conn.cursor()
@@ -88,13 +96,13 @@ class Account:
             )
             row = cursor.fetchone()
             if not row:
-                raise ValueError("Account not found")
+                raise AccountNotFound("Account not found")
 
             account_id, balance = row
             balance = int(balance)
 
             if balance < amount:
-                raise ValueError("Not enough funds")
+                raise NotEnoughFunds("Not enough funds")
 
             new_balance = balance - amount
 
@@ -113,6 +121,7 @@ class Account:
             cursor.close()
 
     def delete_account(self, account_no, bank_code):
+        account_no = int(account_no)
         conn = self.db.get_connection()
         cursor = conn.cursor()
         try:
@@ -122,11 +131,11 @@ class Account:
             )
             row = cursor.fetchone()
             if not row:
-                raise ValueError("Account not found")
+                raise AccountNotFound("Account not found")
 
             account_id, balance = row
             if int(balance) != 0:
-                raise ValueError("Cannot delete bank account that has balance")
+                raise AccountNotEmpty("Cannot delete bank account that has balance")
 
             cursor.execute("DELETE FROM accounts WHERE id=%s", (account_id,))
 
