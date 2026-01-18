@@ -11,12 +11,13 @@ from src.app.commands.ba import BACommand
 from src.app.commands.bn import BNCommand
 
 class App:
-    def __init__(self, account_dao, my_bank_code, listen_port, remote_port, cmd_timeout_sec=5):
+    def __init__(self, account_dao, my_bank_code, listen_port, remote_port, cmd_timeout_sec=5, logger=None):
         self.account_dao = account_dao
         self.my_bank_code = my_bank_code
         self.listen_port = int(listen_port)
         self.remote_port = int(remote_port)
         self.cmd_timeout_sec = float(cmd_timeout_sec)
+        self.logger = logger
         self.proxy_client = ProxyClient(remote_port=self.remote_port, timeout_sec=self.cmd_timeout_sec)
 
         commands = {

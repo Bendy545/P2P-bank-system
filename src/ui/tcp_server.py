@@ -54,7 +54,46 @@ class TCPServer:
                     if not line:
                         continue
 
+                    cmd_code = None
+                    try:
+                        cmd_code = line.split()[0].upper()
+                    except Exception:
+                        pass
+
+                    if getattr(self.app, "logger", None):
+                        self.app.logger.write_log(
+                            level_name="INFO",
+                            event_type="cmd_in",
+                            message="Request received",
+                            client_ip=client_ip,
+                            client_port=client_port,
+                            command=cmd_code,
+                            request_raw=line
+                        )
+
                     response = self.app.dispatcher.dispatch(line, self.app)
+
+                    if getattr(self.app, "logger", None):
+                        level = "INFO"
+                        event_type = "cmd_out"
+                        msg = "Response sent"
+
+                        if response.startswith("ER"):
+                            level = "ERROR"
+                            event_type = "cmd_error"
+                            msg = response
+
+                        self.app.logger.write_log(
+                            level_name=level,
+                            event_type=event_type,
+                            message=msg,
+                            client_ip=client_ip,
+                            client_port=client_port,
+                            command=cmd_code,
+                            request_raw=line,
+                            response_raw=response
+                        )
+
                     out = (response.strip() + "\n").encode("utf-8")
                     client_socket.sendall(out)
 
