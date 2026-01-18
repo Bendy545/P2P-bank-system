@@ -54,7 +54,7 @@ class TCPServer:
                     if not line:
                         continue
 
-                    response = self.app.dispatcher.dispatch(line)
+                    response = self.app.dispatcher.dispatch(line, self.app)
                     out = (response.strip() + "\n").encode("utf-8")
                     client_socket.sendall(out)
 
