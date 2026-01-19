@@ -1,38 +1,43 @@
-import mysql.connector
-import threading
-
 class Database:
-    _instance = None
-    _instance_lock = threading.Lock()
+    def __init__(self, config):
+        self._config = config
+        self._impl = None
+        self._backend = None
 
-    def __new__(cls, config):
-        with cls._instance_lock:
-            if cls._instance is None:
-                cls._instance = super(Database, cls).__new__(cls)
-                cls._instance._config = config
-                cls._instance._local = threading.local()
-        return cls._instance
+        self._select_strategy()
 
-    def _connect_if_needed(self):
-        conn = getattr(self._local, "conn", None)
-        if conn is None or not conn.is_connected():
-            conn = mysql.connector.connect(
-                host=self._config['host'],
-                user=self._config['user'],
-                password=self._config['password'],
-                database=self._config['database'],
-                autocommit=False,
-                connection_timeout=self._config.get("db_connect_timeout", 5)
-            )
-            print("Database connection Initialized.")
-            self._local.conn = conn
-        return conn
+    def _select_strategy(self):
+        try:
+            from src.database.mysql_db import MySQLDatabase
+            impl = MySQLDatabase(self._config)
+            c = impl.get_connection()
+            cur = c.cursor()
+            try:
+                cur.execute("SELECT 1")
+                cur.fetchone()
+            finally:
+                cur.close()
+
+            self._impl = impl
+            self._backend = "mysql"
+            print("DB Strategy: MySQL")
+            return
+        except Exception as e:
+            print(f"DB Strategy: MySQL unavailable ({e}) -> fallback to SQLite")
+
+        from src.database.sqlite_db import SQLiteDatabase
+        path = self._config.get("sqlite_path", "p2p_bank.db")
+        impl = SQLiteDatabase(path)
+        impl.connect()
+        self._impl = impl
+        self._backend = "sqlite"
+        print("DB Strategy: SQLite")
 
     def get_connection(self):
-        return self._connect_if_needed()
+        return self._impl.get_connection()
 
     def close(self):
-        conn = getattr(self._local, "conn", None)
-        if conn:
-            conn.close()
-            self._local.conn = None
+        return self._impl.close()
+
+    def backend_name(self):
+        return self._backend
