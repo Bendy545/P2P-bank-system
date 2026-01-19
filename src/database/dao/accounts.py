@@ -1,5 +1,3 @@
-import mysql.connector
-
 from .transactions import Transactions
 from .errors import AccountNotEmpty, AccountNotFound, NotEnoughFunds, DuplicateAccount
 
@@ -22,11 +20,11 @@ class Account:
             cursor.execute(sql, (account_no, bank_code))
             conn.commit()
             return f"{account_no}/{bank_code}"
-        except mysql.connector.errors.IntegrityError as e:
+        except Exception as e:
             conn.rollback()
-            raise DuplicateAccount("Account already exists") from e
-        except Exception:
-            conn.rollback()
+            msg = str(e).lower()
+            if "unique" in msg or "duplicate" in msg or "constraint" in msg:
+                raise DuplicateAccount("Account already exists") from e
             raise
         finally:
             cursor.close()

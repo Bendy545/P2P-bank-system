@@ -1,4 +1,4 @@
-from src.app.commands.base import Command
+from my_lib.my_library.command.base import Command
 
 class BNCommand(Command):
     def execute(self, app, raw_line, arg1, arg2):

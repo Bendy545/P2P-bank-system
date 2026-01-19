@@ -1,8 +1,10 @@
 {
   "host": "127.0.0.1",
   "user": "root",
-  "password": "5sCGtWBjSm",
+  "password": "5sCGtWBjS",
   "database": "p2p_bank",
+
+  "sqlite_path": "data/p2p_bank.db",
 
   "listen_host": "0.0.0.0",
   "listen_port": 65525,

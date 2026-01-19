@@ -1,4 +1,4 @@
-from src.app.commands.base import Command
+from my_lib.my_library.command.base import Command
 from src.app.parse import parse_account_ref, parse_amount
 
 class AWCommand(Command):

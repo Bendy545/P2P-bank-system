@@ -25,78 +25,49 @@ class TCPServer:
             except Exception:
                 pass
 
+    def _iter_lines(self, sock, buffer_size=4096):
+        buffer = b""
+
+        while True:
+            chunk = sock.recv(buffer_size)
+            if not chunk:
+                return
+            buffer+= chunk
+
+            while True:
+                new_line = buffer.find(b"\n")
+                if new_line == -1:
+                    break
+                line_bytes = buffer[:new_line]
+                buffer = buffer[new_line + 1:]
+                yield line_bytes.decode("utf-8", errors="replace").strip()
+
     def _handle_client(self, client_socket, address):
         client_ip, client_port = address[0], address[1]
         client_socket.settimeout(self.client_timeout_sec)
 
-        buf = b""
-        last_activity = time.time()
-
         try:
-            while True:
-                if time.time() - last_activity > self.client_timeout_sec:
-                    break
+            for line in self._iter_lines(client_socket):
+                if not line:
+                    continue
 
-                try:
-                    chunk = client_socket.recv(4096)
-                except socket.timeout:
-                    break
+                command_code = (line.split()[0].upper() if line.split() else None)
 
-                if not chunk:
-                    break
+                if getattr(self.app, "logger", None):
+                    self.app.logger.write_log(level_name="INFO", event_type="cmd_in", message="Request received", client_ip=client_ip, client_port=client_port, command=command_code, request_raw=line)
 
-                last_activity = time.time()
-                buf += chunk
+                response = self.app.dispatcher.dispatch(line, self.app)
 
-                while b"\n" in buf:
-                    line_bytes, buf = buf.split(b"\n", 1)
-                    line = line_bytes.decode("utf-8", errors="replace").strip()
-                    if not line:
-                        continue
+                if getattr(self.app, "logger", None):
+                    level = "ERROR" if response.startswith("ER") else "INFO"
+                    event_type = "cmd_error" if response.startswith("ER") else "cmd_out"
+                    message = response if response.startswith("ER") else "Response sent"
+                    self.app.logger.write_log(level_name=level,event_type=event_type, message=message, client_ip=client_ip, client_port=client_port, command=command_code, request_raw=line, response_raw=response)
 
-                    cmd_code = None
-                    try:
-                        cmd_code = line.split()[0].upper()
-                    except Exception:
-                        pass
+                client_socket.sendall((response.strip() + "\n").encode("utf-8"))
 
-                    if getattr(self.app, "logger", None):
-                        self.app.logger.write_log(
-                            level_name="INFO",
-                            event_type="cmd_in",
-                            message="Request received",
-                            client_ip=client_ip,
-                            client_port=client_port,
-                            command=cmd_code,
-                            request_raw=line
-                        )
-
-                    response = self.app.dispatcher.dispatch(line, self.app)
-
-                    if getattr(self.app, "logger", None):
-                        level = "INFO"
-                        event_type = "cmd_out"
-                        msg = "Response sent"
-
-                        if response.startswith("ER"):
-                            level = "ERROR"
-                            event_type = "cmd_error"
-                            msg = response
-
-                        self.app.logger.write_log(
-                            level_name=level,
-                            event_type=event_type,
-                            message=msg,
-                            client_ip=client_ip,
-                            client_port=client_port,
-                            command=cmd_code,
-                            request_raw=line,
-                            response_raw=response
-                        )
-
-                    out = (response.strip() + "\n").encode("utf-8")
-                    client_socket.sendall(out)
-
+        except socket.timeout:
+            pass
         finally:
             try:
                 client_socket.close()
