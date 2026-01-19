@@ -1,5 +1,5 @@
 import random
-from src.app.commands.base import Command
+from my_lib.my_library.command.base import Command
 from src.database.dao.errors import DuplicateAccount
 
 class ACCommand(Command):
