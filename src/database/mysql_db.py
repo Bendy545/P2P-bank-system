@@ -7,6 +7,15 @@ class MySQLDatabase:
         self._connections = {}
 
     def connect(self):
+        test_conn = mysql.connector.connect(
+            host=self._config["host"],
+            user=self._config["user"],
+            password=self._config["password"],
+            database=self._config["database"],
+            autocommit=False,
+            connection_timeout=self._config.get("db_connect_timeout", 5),
+        )
+        test_conn.close()
         return True
 
     def get_connection(self):

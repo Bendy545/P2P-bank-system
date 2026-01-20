@@ -5,10 +5,9 @@ class SQLiteDatabase:
     def __init__(self, path="p2p_bank.db"):
         self._path = path
         self._connections = {}
+        self._schema_initialized = False
 
     def connect(self):
-        conn = self.get_connection()
-        self._init_schema(conn)
         return True
 
     def get_connection(self):
@@ -19,6 +18,8 @@ class SQLiteDatabase:
             raw.execute("PRAGMA foreign_keys = ON;")
             conn = _SQLiteConnectionAdapter(raw)
             self._connections[pid] = conn
+
+            self._init_schema(conn)
         return conn
 
     def close(self):
