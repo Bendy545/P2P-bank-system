@@ -10,13 +10,8 @@ class Database:
         try:
             from src.database.mysql_db import MySQLDatabase
             impl = MySQLDatabase(self._config)
-            c = impl.get_connection()
-            cur = c.cursor()
-            try:
-                cur.execute("SELECT 1")
-                cur.fetchone()
-            finally:
-                cur.close()
+
+            impl.connect()
 
             self._impl = impl
             self._backend = "mysql"

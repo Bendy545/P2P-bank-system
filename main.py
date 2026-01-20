@@ -1,3 +1,5 @@
+import multiprocessing
+
 from my_lib.my_library.config.json_config import load_json_config, get_int
 from my_lib.my_library.util.ip_detect import detect_local_ipv4
 
@@ -7,7 +9,7 @@ from src.database.dao.log import Log
 from src.app.app import App
 from src.ui.tcp_server import TCPServer
 
-if __name__ == "__main__":
+def main():
     cfg = load_json_config("config.json", required_keys=["host", "user", "password", "database"])
 
     listen_host = cfg.get("listen_host", "0.0.0.0")
@@ -33,3 +35,8 @@ if __name__ == "__main__":
 
     server = TCPServer(app, client_timeout_sec=client_timeout)
     server.start(listen_host)
+
+if __name__ == "__main__":
+    multiprocessing.freeze_support()
+
+    main()

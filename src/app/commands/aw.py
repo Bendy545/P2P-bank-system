@@ -7,7 +7,7 @@ class AWCommand(Command):
         amount = parse_amount(arg2)
 
         if bank_code != app.my_bank_code:
-            resp = app.proxy.forward(bank_code, raw_line)
+            resp = app.proxy_client.forward(bank_code, raw_line)
             return ("RAW", resp)
 
         app.account_dao.withdraw(account_no, bank_code, amount)

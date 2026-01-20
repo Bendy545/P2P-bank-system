@@ -1,8 +1,10 @@
 import socket
 import threading
-import time
+import multiprocessing
+from multiprocessing import Process
 
 class TCPServer:
+
     def __init__(self, app, client_timeout_sec=10):
         self.app = app
         self.client_timeout_sec = float(client_timeout_sec)
@@ -17,8 +19,11 @@ class TCPServer:
 
             while True:
                 client_socket, address = server.accept()
-                t = threading.Thread(target=self._handle_client, args=(client_socket, address), daemon=True)
-                t.start()
+                p = Process(target=self._handle_client, args=(client_socket, address))
+                p.daemon = True
+                p.start()
+
+                client_socket.close()
         finally:
             try:
                 server.close()
@@ -33,6 +38,9 @@ class TCPServer:
             if not chunk:
                 return
             buffer+= chunk
+
+            if len(buffer) > 1024:
+                raise Exception("Line too long")
 
             while True:
                 new_line = buffer.find(b"\n")

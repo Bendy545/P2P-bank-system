@@ -1,16 +1,26 @@
 import mysql.connector
-import threading
+import os
 
 class MySQLDatabase:
     def __init__(self, config):
         self._config = config
-        self._local = threading.local()
+        self._connections = {}
 
     def connect(self):
+        test_conn = mysql.connector.connect(
+            host=self._config["host"],
+            user=self._config["user"],
+            password=self._config["password"],
+            database=self._config["database"],
+            autocommit=False,
+            connection_timeout=self._config.get("db_connect_timeout", 5),
+        )
+        test_conn.close()
         return True
 
     def get_connection(self):
-        conn = getattr(self._local, "conn", None)
+        pid = os.getpid()
+        conn = self._connections.get(pid)
         if conn is None or not conn.is_connected():
             conn = mysql.connector.connect(
                 host=self._config["host"],
@@ -20,11 +30,12 @@ class MySQLDatabase:
                 autocommit=False,
                 connection_timeout=self._config.get("db_connect_timeout", 5),
             )
-            self._local.conn = conn
+            self._connections[pid] = conn
         return conn
 
     def close(self):
-        conn = getattr(self._local, "conn", None)
+        pid = os.getpid()
+        conn = self._connections.get(pid)
         if conn:
             conn.close()
-            self._local.conn = None
+            del self._connections[pid]
