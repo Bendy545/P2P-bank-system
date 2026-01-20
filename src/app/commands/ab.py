@@ -6,7 +6,7 @@ class ABCommand(Command):
         account_no, bank_code = parse_account_ref(arg1)
 
         if bank_code != app.my_bank_code:
-            resp = app.proxy.forward(bank_code, raw_line)
+            resp = app.proxy_client.forward(bank_code, raw_line)
             return ("RAW", resp)
 
         balance = app.account_dao.get_balance(account_no, bank_code)

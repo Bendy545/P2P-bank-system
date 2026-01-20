@@ -1,10 +1,10 @@
 import sqlite3
-import threading
+import os
 
 class SQLiteDatabase:
     def __init__(self, path="p2p_bank.db"):
         self._path = path
-        self._local = threading.local()
+        self._connections = {}
 
     def connect(self):
         conn = self.get_connection()
@@ -12,19 +12,21 @@ class SQLiteDatabase:
         return True
 
     def get_connection(self):
-        conn = getattr(self._local, "conn", None)
+        pid = os.getpid()
+        conn = self._connections.get(pid)
         if conn is None:
             raw = sqlite3.connect(self._path, timeout=5, check_same_thread=False)
             raw.execute("PRAGMA foreign_keys = ON;")
             conn = _SQLiteConnectionAdapter(raw)
-            self._local.conn = conn
+            self._connections[pid] = conn
         return conn
 
     def close(self):
-        conn = getattr(self._local, "conn", None)
+        pid = os.getpid()
+        conn = self._connections.get(pid)
         if conn:
             conn.close()
-            self._local.conn = None
+            del self._connections[pid]
 
     def _init_schema(self, conn):
         schema = """

@@ -4,6 +4,8 @@ class ProxyError(Exception):
     pass
 
 class ProxyClient:
+    MAX_RESPONSE_SIZE = 8192
+
     def __init__(self, remote_port, timeout_sec=5):
         self.remote_port = int(remote_port)
         self.timeout_sec = float(timeout_sec)
@@ -24,12 +26,17 @@ class ProxyClient:
                     break
 
                 buf += chunk
-                if len(buf) > 4096:
-                    break
+                if len(buf) > self.MAX_RESPONSE_SIZE:
+                    raise ProxyError("Response too large from remote bank")
+
+            if b"\n" not in buf:
+                if buf:
+                    raise ProxyError("Incomplete response from remote bank")
+                else:
+                    raise ProxyError("Empty response from remote bank")
 
             line = buf.split(b"\n", 1)[0].decode("utf-8", errors="replace")
-            if not line:
-                raise ProxyError("Empty response from remote bank")
+
             return line
 
         except socket.timeout as e:
