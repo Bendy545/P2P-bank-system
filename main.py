@@ -1,4 +1,5 @@
 import multiprocessing
+from threading import Thread
 
 from my_lib.my_library.config.json_config import load_json_config, get_int
 from my_lib.my_library.util.ip_detect import detect_local_ipv4
@@ -8,6 +9,8 @@ from src.database.dao.accounts import Account
 from src.database.dao.log import Log
 from src.app.app import App
 from src.ui.tcp_server import TCPServer
+from src.ui.web_monitor import create_monitor_app
+
 
 def main():
     cfg = load_json_config("config.json", required_keys=["host", "user", "password", "database"])
@@ -34,9 +37,20 @@ def main():
     )
 
     server = TCPServer(app, client_timeout_sec=client_timeout)
-    server.start(listen_host)
+
+    server_thread = Thread(
+        target=server.start,
+        args=(listen_host,),
+        daemon=True
+    )
+    server_thread.start()
+
+    print(f"TCP server running on {listen_host}:{listen_port}", flush=True)
+
+    monitor_app = create_monitor_app()
+    monitor_app.run(host="127.0.0.1", port=8080, debug=True)
+
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
-
     main()

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Monitor</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+    .card {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+    }
+    .field {
+      margin-bottom: .5rem;
+    }
+    .label {
+      font-weight: 600;
+      color: #333;
+    }
+    .value {
+      color: #555;
+    }
+    button {
+      padding: .4rem .8rem;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Monitor</h1>
+
+  <div class="card">
+    <div class="field">
+      <span class="label">Bank code:</span>
+      <span class="value">{{ status.my_bank_code }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Listen port:</span>
+      <span class="value">{{ status.listen_port }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Remote port:</span>
+      <span class="value">{{ status.remote_port }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Command timeout (s):</span>
+      <span class="value">{{ status.cmd_timeout_sec }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Client count (bank):</span>
+      <span class="value">{{ status.client_count }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Server running:</span>
+      <span class="value">{{ status.server_running }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">DB backend:</span>
+      <span class="value">{{ status.db_backend }}</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Control and shutdown</h3>
+    <form method="post" action="/shutdown">
+      <button type="submit">Safely shut down server</button>
+    </form>
+  </div>
+</body>
+</html>
