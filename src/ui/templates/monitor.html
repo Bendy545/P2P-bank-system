@@ -30,6 +30,42 @@
       padding: .4rem .8rem;
     }
   </style>
+
+  <script>
+    const FIELDS = {
+      my_bank_code: "bank_code",
+      listen_port: "listen_port",
+      remote_port: "remote_port",
+      cmd_timeout_sec: "cmd_timeout",
+      client_count: "client_count",
+      server_running: "server_running",
+      db_backend: "db_backend"
+    };
+
+    async function fetchStatus() {
+      try {
+        const r = await fetch('/api/status');
+        if (!r.ok) return;
+
+        const status = await r.json();
+
+        Object.entries(FIELDS).forEach(([apiKey, domId]) => {
+          if (status[apiKey] !== undefined) {
+            const el = document.getElementById(domId);
+            if (el) {
+              el.textContent = status[apiKey];
+            }
+          }
+        });
+      } catch (e) {
+        console.error("fetchStatus failed", e);
+      }
+    }
+
+    window.addEventListener("load", fetchStatus);
+    setInterval(fetchStatus, 2000);
+  </script>
+
 </head>
 
 <body>

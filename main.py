@@ -9,6 +9,7 @@ from src.database.dao.accounts import Account
 from src.database.dao.log import Log
 from src.app.app import App
 from src.ui.tcp_server import TCPServer
+
 from src.ui.web_monitor import create_monitor_app
 
 
@@ -47,9 +48,9 @@ def main():
 
     print(f"TCP server running on {listen_host}:{listen_port}", flush=True)
 
-    monitor_app = create_monitor_app()
-    monitor_app.run(host="127.0.0.1", port=8080, debug=True)
-
+    monitor_app = create_monitor_app(app, server)
+    monitor_port = cfg.get("monitor_port", 5000)
+    monitor_app.run(host="127.0.0.1", port=monitor_port, debug=False, use_reloader=False)
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()

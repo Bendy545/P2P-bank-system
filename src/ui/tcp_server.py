@@ -1,6 +1,4 @@
 import socket
-import threading
-import multiprocessing
 from multiprocessing import Process
 
 class TCPServer:
@@ -8,23 +6,37 @@ class TCPServer:
     def __init__(self, app, client_timeout_sec=10):
         self.app = app
         self.client_timeout_sec = float(client_timeout_sec)
+        self._server_socket = None
+        self._running = False
 
     def start(self, host="0.0.0.0"):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._server_socket = server
+
         try:
             server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server.bind((host, self.app.listen_port))
             server.listen(50)
+            server.settimeout(1.0)
+
+            self._running = True
             print(f"Listening on {host}:{self.app.listen_port} (bank code {self.app.my_bank_code})")
 
-            while True:
-                client_socket, address = server.accept()
+            while self._running:
+                try:
+                    client_socket, address = server.accept()
+                except socket.timeout:
+                    continue
+                except OSError:
+                    break
+
                 p = Process(target=self._handle_client, args=(client_socket, address))
                 p.daemon = True
                 p.start()
-
                 client_socket.close()
+
         finally:
+            self._running = False
             try:
                 server.close()
             except Exception:
@@ -81,3 +93,14 @@ class TCPServer:
                 client_socket.close()
             except Exception:
                 pass
+
+    def stop(self):
+        self._running = False
+        try:
+            if self._server_socket:
+                self._server_socket.close()
+        except Exception:
+            pass
+
+    def is_running(self):
+        return self._running
