@@ -44,7 +44,7 @@ def create_monitor_app(app_obj, server_obj, database):
 
     @flask_app.route('/api/status', methods=['GET'])
     def api_status():
-        status = _build_status(app_obj, server_obj)
+        status = _build_status(app_obj, server_obj, database)
         return jsonify(status)
 
     @flask_app.route('/shutdown', methods=['POST'])
