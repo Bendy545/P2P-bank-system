@@ -27,7 +27,7 @@ def main():
     db = Database(cfg)
     account_dao = Account(db)
     logger = Log(db)
-    database = db.backend_name()
+    database_name = db.backend_name()
 
     app = App(
         account_dao=account_dao,
@@ -49,7 +49,7 @@ def main():
 
     print(f"TCP server running on {listen_host}:{listen_port}", flush=True)
 
-    monitor_app = create_monitor_app(app, server, database)
+    monitor_app = create_monitor_app(app, server, database_name)
     monitor_port = cfg.get("monitor_port", 5000)
     monitor_app.run(host="127.0.0.1", port=monitor_port, debug=False, use_reloader=False)
 
