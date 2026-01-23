@@ -15,9 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TCP server now supports safe shutdown via the monitor interface (Author: Sofia Hennelová)
 
 ### Changed
-- Database tables initialization on startup of the program.
+- Database tables initialization on startup of the program. (Author: Martin Chmelík)
   - No need for the user to create tables, now he only needs to create database user and the database
-- DATABASE.sql.
+- DATABASE.sql. (Author: Martin Chmelík)
   - deleted creating the database and also the start transaction statement.
 
 ### Fixed
