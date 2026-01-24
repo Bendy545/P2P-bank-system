@@ -5,10 +5,8 @@ from src.database.dao.log import Log
 from src.app.log_service import LogService
 from src.database.dao.accounts import Account
 
-
 from flask import Flask, render_template, jsonify, abort
 import sys
-
 
 def _build_status(app_obj, server_obj, database, account_dao):
     my_ip = getattr(app_obj, "my_bank_code", None)
@@ -77,7 +75,3 @@ def create_monitor_app(app_obj, server_obj, database, cfg):
         return "Shutdown initiated", 200
 
     return flask_app
-
-
-
-

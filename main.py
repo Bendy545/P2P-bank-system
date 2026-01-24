@@ -27,7 +27,6 @@ def main():
     db = Database(cfg)
     account_dao = Account(db)
     logger = Log(db)
-    database_name = db.backend_name()
 
     app = App(
         account_dao=account_dao,
