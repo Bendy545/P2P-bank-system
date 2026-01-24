@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - deleted creating the database and also the start transaction statement.
 
 ### Fixed
-
+- Process handling when opening monitor and after connecting through putty. (Author: Martin Chmelík)
 
 ## [v1.0.0] - 2026-01-20
 
