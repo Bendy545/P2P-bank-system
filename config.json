@@ -1,7 +1,7 @@
 {
   "host": "127.0.0.1",
   "user": "p2p_user",
-  "password": "password",
+  "password": "passwod",
   "database": "p2p_bank",
 
   "sqlite_path": "data/p2p_bank.db",

@@ -5,6 +5,8 @@ from src.database.database import Database
 from src.database.dao.accounts import Account
 from src.database.dao.log import Log
 from src.app.app import App
+import faulthandler, sys, traceback
+faulthandler.enable()
 
 def _iter_lines(sock, buffer_size=4096):
     buffer = b""
@@ -26,14 +28,33 @@ def _iter_lines(sock, buffer_size=4096):
             yield line_bytes.decode("utf-8", errors="replace").strip()
 
 def handle_client_process(client_socket, address, cfg, runtime, client_timeout_sec):
-    db = Database(cfg)
-    account_dao = Account(db)
-    logger = Log(db)
+    try:
+        print("WORKER: start", address, flush=True)
 
-    app = App( account_dao=account_dao, my_bank_code=runtime["my_bank_code"], listen_port=runtime["listen_port"], remote_port=runtime["remote_port"], cmd_timeout_sec=runtime["cmd_timeout_sec"], logger=logger)
+        print("WORKER: creating DB", flush=True)
+        db = Database(cfg)
 
-    client_ip, client_port = address[0], address[1]
-    client_socket.settimeout(float(client_timeout_sec))
+        print("WORKER: creating DAO", flush=True)
+        account_dao = Account(db)
+        logger = Log(db)
+
+        print("WORKER: creating APP", flush=True)
+        app = App(
+            account_dao=account_dao,
+            my_bank_code=runtime["my_bank_code"],
+            listen_port=runtime["listen_port"],
+            remote_port=runtime["remote_port"],
+            cmd_timeout_sec=runtime["cmd_timeout_sec"],
+            logger=logger
+        )
+
+        print("WORKER: ready, entering recv loop", flush=True)
+        client_ip, client_port = address[0], address[1]
+        client_socket.settimeout(float(client_timeout_sec))
+    except Exception as e:
+        print("WORKER: python exception:", repr(e), flush=True)
+        traceback.print_exc()
+        raise
 
     try:
         for line in _iter_lines(client_socket):

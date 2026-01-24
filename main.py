@@ -58,10 +58,12 @@ def main():
 
     print(f"TCP server running on {listen_host}:{listen_port}", flush=True)
 
-    monitor_app = create_monitor_app(app, server, database_name)
+    monitor_app = create_monitor_app(app, server, db.backend_name(), cfg)
     monitor_port = cfg.get("monitor_port", 5000)
-    monitor_app.run(host="127.0.0.1", port=monitor_port, debug=False, use_reloader=False)
+    monitor_app.run(host="127.0.0.1", port=monitor_port, debug=False, use_reloader=False, threaded=False)
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
+    multiprocessing.set_start_method("spawn", force=True)
+
     main()
