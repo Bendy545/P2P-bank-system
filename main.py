@@ -38,7 +38,16 @@ def main():
         logger=logger
     )
 
-    server = TCPServer(app, client_timeout_sec=client_timeout)
+    server = TCPServer(
+        cfg=cfg,
+        runtime={
+            "my_bank_code": my_bank_code,
+            "listen_port": listen_port,
+            "remote_port": remote_port,
+            "cmd_timeout_sec": cmd_timeout,
+        },
+        client_timeout_sec=client_timeout
+    )
 
     server_thread = Thread(
         target=server.start,
