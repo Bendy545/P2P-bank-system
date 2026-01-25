@@ -4,50 +4,6 @@
 
 ![ARCHITECTURE](doc/app_design.png)
 
-## Project structure
-
-```text
-.
-├── LICENSE
-├── README.md
-├── config.json
-├── data
-├── doc
-│    └── app_design.png
-├── main.py
-├── my_lib
-│        └── my_library    <--- library with reusable code
-│           
-└── src
-    ├── app 
-    │    ├── app.py
-    │    ├── commands
-    │    │       ├── ab.py
-    │    │       ├── ac.py
-    │    │       ├── ad.py
-    │    │       ├── ar.py
-    │    │       ├── aw.py
-    │    │       ├── ba.py
-    │    │       ├── bc.py
-    │    │       └── bn.py
-    │    ├── dispatcher_factory.py
-    │    ├── ip_detect.py
-    │    ├── parse.py
-    │    ├── proxy.py
-    │    └── response.py
-    ├── database
-    │    ├── dao
-    │    ├── database.py
-    │    ├── mysql_db.py
-    │    ├── sql
-    │    └── sqlite_db.py
-    └── ui
-        └── tcp_server.py
-
-```
-
----
-
 ## Instalation and setup
 - This is the guide to installation and startup of the application
 ### Prerequisites
@@ -67,7 +23,6 @@
 ```
 4. Click test connection
 5. Click Ok and connect
-
 
 #### 1.2 User and database creation
 1. Paste the following SQL code:
@@ -102,7 +57,9 @@ to 'p2p_user'@'localhost';
   "remote_port": 65525,
 
   "command_timeout_sec": 5,
-  "client_timeout_sec": 30
+  "client_timeout_sec": 30,
+
+  "monitor_port": 5000
 }
 
 ```
@@ -119,5 +76,6 @@ pip install -r requirements.txt
 3. from the project root run the main.py file.
 #### 2. Downloading .exe file from releases
 1. Download the .zip file that contains config.json, bank_service.exe and README.md
-2. Follow the instructions in the README.md file.
+   - [Version2 Download](https://github.com/Bendy545/P2P-bank-system/releases/download/v2.0.0/Version2.zip)
+3. Follow the instructions in the README.md file.
 
