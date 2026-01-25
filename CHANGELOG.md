@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simple user interface for monitoring the node's status and operation (Author: Sofia Hennelová)
   - Provides a graphical overview of node status, including bank code, ports, command timeout, client count, server running state, and database backend.
   - Allows safe shutdown of the node.
-  - Shows last logs (Author: Martin Chmelík)
 - TCP server now supports safe shutdown via the monitor interface (Author: Sofia Hennelová)
 
 ### Changed
@@ -23,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Process handling when opening monitor and after connecting through putty. (Author: Martin Chmelík)
-- Showing last logs - MySQL (Author: Sofia Hennelová)
 
 ## [v1.0.0] - 2026-01-20
 

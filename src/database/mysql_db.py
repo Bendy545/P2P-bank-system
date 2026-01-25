@@ -16,6 +16,7 @@ class MySQLDatabase:
                 database=self._config["database"],
                 autocommit=False,
                 connection_timeout=self._config.get("db_connect_timeout", 5),
+                use_pure=True
             )
 
             print(f"Connected k DB '{self._config['database']}'. Checking scheme...")
@@ -72,6 +73,7 @@ class MySQLDatabase:
                 database=self._config["database"],
                 autocommit=False,
                 connection_timeout=self._config.get("db_connect_timeout", 5),
+                use_pure=True
             )
             self._connections[pid] = conn
         return conn
