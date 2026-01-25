@@ -10,8 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Simple user interface for monitoring the node's status and operation (Author: Sofia Hennelová)
-  - Provides a graphical overview of node status, including bank code, ports, command timeout, client count, server running state, and database backend.
+  - Provides a graphical overview of node status, including bank code, ports, command timeout, client count, bank total, server running state, and database backend.
   - Allows safe shutdown of the node.
+  - Shows bank accounts
   - Shows last logs (Author: Martin Chmelík)
 - TCP server now supports safe shutdown via the monitor interface (Author: Sofia Hennelová)
 
