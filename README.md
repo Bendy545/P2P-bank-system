@@ -68,24 +68,23 @@
 4. Click test connection
 5. Click Ok and connect
 
-#### 1.2 Database creation
-- execute the DATABASE.sql script   
-/src/database/sql/DATABASE.sql
-- Verify that tables were created successfully
-#### 1.3 User creation
+
+#### 1.2 User and database creation
 1. Paste the following SQL code:
 ```mysql
+create database p2p_bank;
+
 create user 'p2p_user'@'localhost'
 identified by 'password';
 
-grant select, insert, update, delete
+grant select, insert, update, delete, create , references, index
 on p2p_bank.*
 to 'p2p_user'@'localhost';
 
 ```
 - this creates a user with name p2p_user and with password = password
 
-#### 1.4 Database configuration
+#### 1.3 Database configuration
 - Edit the user, password and if so the database in the configuration file config.json
 - example configuration:
 ```json

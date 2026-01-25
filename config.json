@@ -12,5 +12,7 @@
   "remote_port": 65525,
 
   "command_timeout_sec": 5,
-  "client_timeout_sec": 30
+  "client_timeout_sec": 30,
+
+  "monitor_port": 5000
 }

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Monitor</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='monitor.css') }}">
+</head>
+
+<body>
+  <h1>Monitor</h1>
+
+  <div class="card">
+    <div class="field">
+      <span class="label">Bank code:</span>
+      <span class="value" id="bank_code">{{ status.my_bank_code }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Listen port:</span>
+      <span class="value" id="listen_port">{{ status.listen_port }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Remote port:</span>
+      <span class="value" id="remote_port">{{ status.remote_port }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Command timeout (s):</span>
+      <span class="value" id="cmd_timeout">{{ status.cmd_timeout_sec }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Client count (bank):</span>
+      <span class="value" id="client_count">{{ status.client_count }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Bank total:</span>
+      <span class="value" id="bank_total">{{ status.bank_total }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">Server running:</span>
+      <span class="value" id="server_running">{{ status.server_running }}</span>
+    </div>
+
+    <div class="field">
+      <span class="label">DB backend:</span>
+      <span class="value" id="db_backend">{{ status.db_backend }}</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Control and shutdown</h3>
+    <form method="post" action="/shutdown">
+      <button type="submit">Safely shut down server</button>
+    </form>
+  </div>
+
+  <script src="{{ url_for('static', filename='monitor.js') }}"></script>
+
+  <div class="card">
+  <h3>Last 20 logs</h3>
+
+  <table id="log-table">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Level</th>
+        <th>Event</th>
+        <th>Cmd</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Accounts</h3>
+
+  <table id="account-table">
+    <thead>
+      <tr>
+        <th>Account number</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+</body>
+</html>
