@@ -4,6 +4,7 @@ from src.database.database import Database
 from src.database.dao.log import Log
 from src.app.log_service import LogService
 from src.database.dao.accounts import Account
+from src.app.account_service import AccountService
 
 from flask import Flask, render_template, jsonify, abort
 import sys
@@ -49,6 +50,7 @@ def create_monitor_app(app_obj, server_obj, database, cfg):
     monitor_log_dao = Log(monitor_db)
     log_service = LogService(monitor_log_dao)
     monitor_account_dao = Account(monitor_db)
+    account_service = AccountService(monitor_account_dao)
 
 
     @flask_app.route('/')
@@ -67,6 +69,14 @@ def create_monitor_app(app_obj, server_obj, database, cfg):
         try:
             logs = log_service.get_last_logs(limit=20)
             return jsonify(logs)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    @flask_app.route("/api/accounts", methods=['GET'])
+    def api_accounts():
+        try:
+            accounts = account_service.get_accounts(app_obj.my_bank_code)
+            return jsonify(accounts)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 

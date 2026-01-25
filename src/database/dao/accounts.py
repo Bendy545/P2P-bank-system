@@ -179,3 +179,16 @@ class Account:
             return cursor.fetchone() is not None
         finally:
             cursor.close()
+
+    def get_accounts(self, bank_code):
+        conn = self.db.get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "SELECT account_no, balance FROM accounts WHERE bank_code=%s",
+                (bank_code,)
+            )
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            conn.commit()

@@ -62,11 +62,43 @@ async function fetchLogs() {
   }
 }
 
+async function fetchAccounts() {
+  try {
+    const r = await fetch("/api/accounts");
+    if (!r.ok) return;
+
+    const data = await r.json();
+
+    if (!Array.isArray(data)) {
+      console.error("account api error:", data);
+      return;
+    }
+
+    const tbody = document.querySelector("#account-table tbody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    data.forEach(a => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${a.account_no ?? ""}</td>
+        <td>${a.balance ?? ""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (e) {
+    console.error("fetchAccounts failed", e);
+  }
+}
+
 
 window.addEventListener("load", () => {
   fetchStatus();
   fetchLogs();
+  fetchAccounts();
 
   setInterval(fetchStatus, 2000);
   setInterval(fetchLogs, 3000);
+  setInterval(fetchAccounts, 4000);
 });
