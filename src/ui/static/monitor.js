@@ -4,6 +4,7 @@ const FIELDS = {
   remote_port: "remote_port",
   cmd_timeout_sec: "cmd_timeout",
   client_count: "client_count",
+  bank_total: "bank_total",
   server_running: "server_running",
   db_backend: "db_backend"
 };

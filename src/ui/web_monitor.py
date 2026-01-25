@@ -19,6 +19,11 @@ def _build_status(app_obj, server_obj, database, account_dao):
     except Exception as e:
         client_count = f"error: {e}"
 
+    try:
+        bank_total = account_dao.bank_total_amount(app_obj.my_bank_code)
+    except Exception as e:
+        bank_total = f"error: {e}"
+
     server_running = "unknown"
     try:
         if hasattr(server_obj, "is_running") and callable(server_obj.is_running):
@@ -32,6 +37,7 @@ def _build_status(app_obj, server_obj, database, account_dao):
             "remote_port": remote_port,
             "cmd_timeout_sec": cmd_timeout_sec,
             "client_count": client_count,
+            "bank_total": bank_total,
             "server_running": server_running,
             "db_backend": database
         }
